@@ -1,0 +1,7 @@
+{
+  "include": ["./src"],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  }
+}

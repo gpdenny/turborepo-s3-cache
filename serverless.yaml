@@ -21,7 +21,7 @@ provider:
 
 functions:
   authorizer:
-    handler: src/handler.authorizer
+    handler: src/authorizer.handler
     environment:
       REGION: ${self:provider.region}
       TEAMS_TABLE: !Ref TeamsTable
@@ -29,7 +29,7 @@ functions:
     # Route not implemented
     # Vercel specific endpoint just need to return 200
     # Handy to build the API Gateway authorizer too
-    handler: src/handler.emptyResponse
+    handler: src/emptyResponse.handler
     events:
       - http:
           path: /v8/artifacts/events
@@ -134,4 +134,5 @@ resources:
 useDotenv: true
 
 plugins:
+  - serverless-plugin-typescript
   - serverless-apigateway-service-proxy
