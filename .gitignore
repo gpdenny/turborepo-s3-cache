@@ -1,0 +1,17 @@
+*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless*.env
+**/node_modules
+.serverless

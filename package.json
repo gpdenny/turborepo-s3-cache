@@ -1,0 +1,12 @@
+{
+  "name": "turborepo-s3-cache",
+  "version": "1.0.0",
+  "description": "API Gateway S3 Proxy for Turborepo remote caching",
+  "author": "Graphy.app",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "serverless": "^3.23.0",
+    "serverless-apigateway-service-proxy": "^2.2.0"
+  }
+}

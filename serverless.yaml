@@ -1,0 +1,137 @@
+---
+service: ${env:SERVICE_NAME}
+
+provider:
+  name: aws
+  region: ${env:REGION}
+  deploymentBucket: gdenny-dev-lambda-deployments-euce1
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource: !GetAtt TeamsTable.Arn
+  logs:
+    restApi: ${env:API_GW_LOGS}
+  apiGateway:
+    binaryMediaTypes:
+      - "application/octet-stream"
+
+functions:
+  authorizer:
+    handler: src/handler.authorizer
+    environment:
+      REGION: ${self:provider.region}
+      TEAMS_TABLE: !Ref TeamsTable
+  emptyResponse:
+    # Route not implemented
+    # Vercel specific endpoint just need to return 200
+    # Handy to build the API Gateway authorizer too
+    handler: src/handler.emptyResponse
+    events:
+      - http:
+          path: /v8/artifacts/events
+          method: post
+          authorizer:
+            name: Authorizer
+            arn: !GetAtt AuthorizerLambdaFunction.Arn
+            identitySource: >
+              method.request.header.Authorization,
+              method.request.querystring.slug
+            type: request
+
+custom:
+  apiGatewayServiceProxies:
+    - s3:
+        path: /v8/artifacts/{hash}
+        method: get
+        authorizationType: "CUSTOM"
+        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
+        action: GetObject
+        bucket:
+          Ref: CacheBucket
+        key:
+          pathParam: hash
+        pathOverride: "{prefix}/{hash}"
+        requestParameters:
+          "integration.request.path.hash": "method.request.path.hash"
+          "integration.request.path.prefix": "method.request.querystring.slug"
+        response:
+          template:
+            clientError: |-
+              { "message": "there is an error in your request" }
+            serverError: |-
+              { "message": "there was an error handling your request" }
+
+    - s3:
+        path: /v8/artifacts/{hash}
+        method: put
+        authorizationType: "CUSTOM"
+        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
+        action: PutObject
+        bucket:
+          Ref: CacheBucket
+        key:
+          pathParam: hash
+        pathOverride: "{prefix}/{hash}"
+        requestParameters:
+          "integration.request.path.hash": "method.request.path.hash"
+          "integration.request.path.prefix": "method.request.querystring.slug"
+          "integration.request.header.x-amz-acl": "'private'"
+        response:
+          template:
+            success: |-
+              { "message: "accepted" }
+            clientError: |-
+              { "message": "there is an error in your request" }
+            serverError: |-
+              { "message": "there was an error handling your request" }
+
+resources:
+  Resources:
+    CacheBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:CACHE_BUCKET_NAME}
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        AccessControl: BucketOwnerFullControl
+    ApiGwAccountConfig:
+      Type: "AWS::ApiGateway::Account"
+      Properties:
+        CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
+    ApiGatewayLoggingRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - "apigateway.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Path: "/"
+        ManagedPolicyArns:
+          - !Sub
+            "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+    TeamsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:TEAMS_TABLE_NAME}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: name
+            KeyType: HASH
+
+useDotenv: true
+
+plugins:
+  - serverless-apigateway-service-proxy
