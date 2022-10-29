@@ -1,0 +1,45 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on: [push]
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: 'yarn'
+      - uses: scottbrenner/cfn-lint-action@v2.2.8
+      - run: yarn install --frozen-lockfile
+      # Eslint
+      - run: yarn lint
+      # YAML Lint
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint
+      # Generate Cloudformation
+      - run: yarn package --stage ci
+      # Cloudformation Lint
+      - run: cfn-lint
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - run: yarn
+      - run: >
+          yarn jest --config=jest.config.cjs
+          --coverage --coverageReporters=json-summary
+          --coverageReporters=text | tee ./coverage.txt
+      - uses: MishaKav/jest-coverage-comment@main
+        id: coverageComment
+        with:
+          junitxml-path: ./junit.xml
+          coverage-summary-path: ./coverage/coverage-summary.json
+          coverage-path: ./coverage.txt

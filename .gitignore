@@ -1,0 +1,9 @@
+*.env
+.env.*
+!.env.example
+!.env.ci
+**/node_modules
+.serverless
+.build
+junit.xml
+coverage

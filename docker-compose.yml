@@ -1,0 +1,80 @@
+---
+version: '3.7'
+services:
+  minio:
+    image: minio/minio:RELEASE.2022-12-12T19-27-27Z
+    environment:
+      - 'MINIO_ROOT_USER=minio'
+      - 'MINIO_ROOT_PASSWORD=minio123'
+    command: server --console-address :9001 /data
+    volumes:
+      - minioData:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 1s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 9000:9000
+      - 9001:9001
+  createbuckets:
+    image: minio/mc
+    entrypoint: /scripts/bootstrap-s3.sh
+    volumes:
+      - ./scripts:/scripts:ro
+    depends_on:
+      minio:
+        condition: service_healthy
+  dynamodb:
+    image: amazon/dynamodb-local
+    hostname: dynamodb
+    restart: always
+    user: root
+    volumes:
+      - dynamodbData:/home/dynamodblocal/data
+    healthcheck:
+      test: ['CMD', 'curl', 'http://localhost:8000/']
+      interval: 1s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8000:8000
+    command: >
+      "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+  createtables:
+    image: amazon/aws-cli
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=dynamo
+      - AWS_SECRET_ACCESS_KEY=dynamo123
+    entrypoint: /scripts/bootstrap-dynamo.sh
+    volumes:
+      - ./scripts:/scripts:ro
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    hostname: dynamodb-admin
+    restart: always
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=dynamo
+      - AWS_SECRET_ACCESS_KEY=dynamo123
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
+    healthcheck:
+      test: >
+        ['CMD', 'wget', '--no-verbose', '--tries=1',
+         '--spider', 'http://localhost:8001/']
+      interval: 1s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8001:8001
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+
+volumes:
+  minioData:
+  dynamodbData:
