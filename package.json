@@ -8,5 +8,9 @@
   "devDependencies": {
     "serverless": "^3.23.0",
     "serverless-apigateway-service-proxy": "^2.2.0"
+  },
+  "volta": {
+    "node": "16.16.0",
+    "yarn": "1.22.19"
   }
 }
