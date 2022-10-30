@@ -4,15 +4,9 @@
   "resource": "/request",
   "path": "/request",
   "httpMethod": "GET",
-  "headers": {
-    "Authorization": "Bearer"
-  },
-  "multiValueHeaders": {
-    "Authorization": ""
-  },
-  "queryStringParameters": {
-    "slug": ""
-  },
+  "headers": {},
+  "multiValueHeaders": {},
+  "queryStringParameters": {},
   "multiValueQueryStringParameters": {},
   "pathParameters": {},
   "stageVariables": {

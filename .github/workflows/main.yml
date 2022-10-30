@@ -1,0 +1,35 @@
+name: Node.js CI
+
+on: [push]
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: 'yarn'
+      - run:  yarn install --frozen-lockfile
+      - run: yarn lint
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - run: yarn
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        id: coverage
+        with:
+            output: comment, report-markdown
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: "junit.xml"
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
