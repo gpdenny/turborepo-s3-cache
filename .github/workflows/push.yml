@@ -10,7 +10,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-      - run: yarn
+          cache: 'yarn'
+      - run:  yarn install --frozen-lockfile
       - run: yarn lint
   Unit-Test:
     runs-on: ubuntu-latest
@@ -31,4 +32,4 @@ jobs:
           report_paths: "junit.xml"
       - name: Coverage Summary
         run: |
-          echo "${{ steps.coverage.outputs.report }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.coverage.outputs.report }}" >> coverage.md
