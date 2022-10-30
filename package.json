@@ -8,7 +8,8 @@
   "scripts": {
     "test": "jest --config=jest.config.cjs",
     "test:e2e": "jest --config=jest-e2e.config.cjs",
-    "package": "sls package"
+    "package": "sls package",
+    "deploy": "sls deploy" 
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.4",
