@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { handler } from '../authorizer';
@@ -153,12 +154,11 @@ describe('Authorization Handler', () => {
     expect(policy.policyDocument).toEqual(expectedPolicy);
   });
 
-
   describe('Policy Generator', () => {
     it('Should return an empty policy document if no effect or resource', async () => {
       const expectedPolicy = {};
       const policy = GeneratePolicy('', '');
       expect(policy).toEqual(expectedPolicy);
-    })
+    });
   });
 });
