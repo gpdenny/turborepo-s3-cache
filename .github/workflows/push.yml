@@ -3,7 +3,7 @@ name: Node.js CI
 on: [push]
 
 jobs:
-  test:
+  Lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,4 +12,17 @@ jobs:
           node-version: '16.x'
       - run: yarn
       - run: yarn lint
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: yarn
       - run: yarn test
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: 'junit.xml'
