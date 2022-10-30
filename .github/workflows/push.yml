@@ -31,4 +31,4 @@ jobs:
           report_paths: "junit.xml"
       - name: Coverage Summary
         run: |
-          echo ${{ steps.coverage.outputs.report }} >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.coverage.outputs.report }}" >> $GITHUB_STEP_SUMMARY
