@@ -30,3 +30,6 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           report_paths: "junit.xml"
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
