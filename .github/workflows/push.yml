@@ -3,7 +3,7 @@ name: Node.js CI
 on: [push]
 
 jobs:
-  "Lint":
+  Lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,7 +12,7 @@ jobs:
           node-version: "16.x"
       - run: yarn
       - run: yarn lint
-  "Unit Test":
+  Unit-Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
