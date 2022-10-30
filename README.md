@@ -72,7 +72,7 @@ Build and Deployment is managed by the [Serverless Framework](http://serverless.
    ```json
    {
        "teamId": "team_myteam",
-       "apiUrl: "https://fxbu8kd8i.execute-api.eu-central-1.amazonaws.com/dev/"
+       "apiUrl": "https://fxbu8kd8i.execute-api.eu-central-1.amazonaws.com/dev/"
    }
    ```
 
