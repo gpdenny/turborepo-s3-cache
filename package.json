@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "lint": "yarn eslint . --ext .ts,.tsx,.js",
     "test": "jest --config=jest.config.cjs",
     "test:e2e": "jest --config=jest-e2e.config.cjs",
     "package": "sls package"
