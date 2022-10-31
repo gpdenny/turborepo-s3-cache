@@ -48,7 +48,7 @@ custom:
         path: /v8/artifacts/{hash}
         method: get
         authorizationType: "CUSTOM"
-        authorizerId: { Ref: "AuthorizerApiGatewayAuthorizer" }
+        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
         action: GetObject
         bucket:
           Ref: CacheBucket
@@ -69,7 +69,7 @@ custom:
         path: /v8/artifacts/{hash}
         method: put
         authorizationType: "CUSTOM"
-        authorizerId: { Ref: "AuthorizerApiGatewayAuthorizer" }
+        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
         action: PutObject
         bucket:
           Ref: CacheBucket
@@ -92,7 +92,7 @@ custom:
 
 resources:
   Conditions:
-    LoggingRole: !Equals ["${env:API_LOG_ROLE}","true"]
+    LoggingRole: !Equals ["${env:API_LOG_ROLE}", "true"]
   Resources:
     CacheBucket:
       Type: AWS::S3::Bucket
@@ -127,7 +127,8 @@ resources:
               Action: "sts:AssumeRole"
         Path: "/"
         ManagedPolicyArns:
-          - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+          - !Sub
+            "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
     TeamsTable:
       Type: AWS::DynamoDB::Table
       Properties:
