@@ -4,7 +4,6 @@ service: ${env:SERVICE_NAME}
 provider:
   name: aws
   region: ${env:REGION}
-  deploymentBucket: gdenny-dev-lambda-deployments-euce1
   runtime: nodejs16.x
   iam:
     role:
