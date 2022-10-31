@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: "16.x"
           cache: 'yarn'
-      - uses: scottbrenner/cfn-lint-action@v2
+      - uses: scottbrenner/cfn-lint-action@v2.2.8
       - run: yarn install --frozen-lockfile
       # Eslint
       - run: yarn lint
