@@ -1,4 +1,4 @@
-name: Node.js CI
+name: CI
 
 on: [push]
 
@@ -11,8 +11,11 @@ jobs:
         with:
           node-version: "16.x"
           cache: 'yarn'
+      - uses: scottbrenner/cfn-lint-action@v2
       - run:  yarn install --frozen-lockfile
       - run: yarn lint
+      - run: yarn package --stage ci
+      - run: cfnlint
   Unit-Test:
     runs-on: ubuntu-latest
     steps:

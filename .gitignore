@@ -1,4 +1,7 @@
 *.env
+.env.*
+!.env.example
+!.env.ci
 **/node_modules
 .serverless
 junit.xml

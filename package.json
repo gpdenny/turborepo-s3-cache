@@ -10,7 +10,7 @@
     "test": "jest --config=jest.config.cjs --coverage",
     "test:e2e": "jest --config=jest-e2e.config.cjs",
     "package": "sls package",
-    "deploy": "sls deploy" 
+    "deploy": "sls deploy"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.4",

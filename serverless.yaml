@@ -80,7 +80,7 @@ custom:
           "integration.request.path.hash": "method.request.path.hash"
           "integration.request.path.prefix": "method.request.querystring.slug"
           "integration.request.header.x-amz-acl": "'private'"
-          "integration.request.header.x-amz-server-side-encryption": "AES256"
+          "integration.request.header.x-amz-server-side-encryption": "'AES256'"
         response:
           template:
             success: |-
@@ -91,6 +91,8 @@ custom:
               { "message": "there was an error handling your request" }
 
 resources:
+  Conditions:
+    LoggingRole: !Equals ["${env:API_LOG_ROLE}","true"]
   Resources:
     CacheBucket:
       Type: AWS::S3::Bucket
@@ -107,10 +109,12 @@ resources:
               Status: "Enabled"
               ExpirationInDays: ${env:CACHE_EXPIRATION_DAYS}
     ApiGwAccountConfig:
+      Condition: LoggingRole
       Type: "AWS::ApiGateway::Account"
       Properties:
         CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
     ApiGatewayLoggingRole:
+      Condition: LoggingRole
       Type: "AWS::IAM::Role"
       Properties:
         AssumeRolePolicyDocument:
