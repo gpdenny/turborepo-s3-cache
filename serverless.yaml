@@ -80,6 +80,7 @@ custom:
           "integration.request.path.hash": "method.request.path.hash"
           "integration.request.path.prefix": "method.request.querystring.slug"
           "integration.request.header.x-amz-acl": "'private'"
+          "integration.request.header.x-amz-server-side-encryption": "AES256"
         response:
           template:
             success: |-
