@@ -46,6 +46,7 @@ Build and Deployment is managed by the [Serverless Framework](http://serverless.
 - `REGION` - The AWS Region to deploy the service to
 - `TEAMS_TABLE_NAME` - Name for the DynamoDB teams table [see below](#item6)
 - `CACHE_BUCKET_NAME` - Name for the artifacts S3 bucket
+- `CACHE_EXPIRATION_DAYS` - Number of days cache artifacts are kept in S3 before being deleted
 - `API_GW_LOGS` - [true/false] - Should API Gateway logging be enabled
 
 5. Run Serverless deploy
