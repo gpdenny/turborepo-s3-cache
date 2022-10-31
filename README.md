@@ -48,6 +48,7 @@ Build and Deployment is managed by the [Serverless Framework](http://serverless.
 - `CACHE_BUCKET_NAME` - Name for the artifacts S3 bucket
 - `CACHE_EXPIRATION_DAYS` - Number of days cache artifacts are kept in S3 before being deleted
 - `API_GW_LOGS` - [true/false] - Should API Gateway logging be enabled
+- `API_LOG_ROLE` - [true/false] - Should Cloudformation create and set the API Gateway Cloudwatch log role
 
 5. Run Serverless deploy
 

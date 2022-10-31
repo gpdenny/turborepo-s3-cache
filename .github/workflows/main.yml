@@ -1,5 +1,7 @@
-name: Node.js CI
+---
+name: CI
 
+# yamllint disable-line rule:truthy
 on: [push]
 
 jobs:
@@ -11,8 +13,18 @@ jobs:
         with:
           node-version: "16.x"
           cache: 'yarn'
-      - run:  yarn install --frozen-lockfile
+      - uses: scottbrenner/cfn-lint-action@v2.2.8
+      - run: yarn install --frozen-lockfile
+      # Eslint
       - run: yarn lint
+      # YAML Lint
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint
+      # Generate Cloudformation
+      - run: yarn package --stage ci
+      # Cloudformation Lint
+      - run: cfn-lint
   Unit-Test:
     runs-on: ubuntu-latest
     steps:
@@ -24,10 +36,10 @@ jobs:
       - uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
         with:
-            output: comment, report-markdown
+          output: comment, report-markdown
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
-        if: always() # always run even if the previous step fails
+        if: always()
         with:
           report_paths: "junit.xml"
       - uses: marocchino/sticky-pull-request-comment@v2
