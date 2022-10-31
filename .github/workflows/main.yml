@@ -18,7 +18,7 @@ jobs:
       # Eslint
       - run: yarn lint
       # YAML Lint
-      - uses: ibiqlik/action-yamllint@v3z
+      - uses: ibiqlik/action-yamllint@v3
       # Generate Cloudformation
       - run: yarn package --stage ci
       # Cloudformation Lint
