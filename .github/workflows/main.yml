@@ -40,9 +40,9 @@ jobs:
           junitxml-path: ./junit.xml
       - name: Check the output coverage
         run: |
-          echo "Coverage Percentage - ${{ steps.coverageComment.outputs.coverage }}"
-          echo "Coverage Color - ${{ steps.coverageComment.outputs.color }}"
-          echo "Summary HTML - ${{ steps.coverageComment.outputs.summaryHtml }}"
+          echo "Coverage Percentage - ${{ steps.coverageComment.outputs.coverage }}" >> $GITHUB_OUTPUT
+          echo "Coverage Color - ${{ steps.coverageComment.outputs.color }}" >> $GITHUB_OUTPUT
+          echo "Summary HTML - ${{ steps.coverageComment.outputs.summaryHtml }}" >> $GITHUB_OUTPUT
 
       # - name: Publish Test Report
       #   uses: mikepenz/action-junit-report@v3
