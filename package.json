@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "lint": "yarn eslint . --ext .ts,.tsx,.js",
-    "test": "jest --config=jest.config.cjs --coverage",
+    "test": "jest --config=jest.config.cjs --coverage --coverageReporters json-summary",
     "test:e2e": "jest --config=jest-e2e.config.cjs",
     "start": "docker-compose up -d && sls offline --stage local",
     "start:ci": "docker-compose up -d && sls offline --stage ci",

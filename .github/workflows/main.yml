@@ -38,12 +38,11 @@ jobs:
         id: coverageComment
         with:
           junitxml-path: ./junit.xml
-          coverage-summary-path: ./coverage/coverage-final.json 
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
-        if: always()
-        with:
-          report_paths: "junit.xml"
-      - uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: ${{ steps.coverage.outputs.report }}
+      # - name: Publish Test Report
+      #   uses: mikepenz/action-junit-report@v3
+      #   if: always()
+      #   with:
+      #     report_paths: "junit.xml"
+      # - uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     message: ${{ steps.coverage.outputs.report }}
