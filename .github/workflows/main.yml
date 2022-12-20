@@ -26,9 +26,6 @@ jobs:
       # Cloudformation Lint
       - run: cfn-lint
   Unit-Test:
-    permissions:
-      pull-requests: write
-      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,10 +33,12 @@ jobs:
         with:
           node-version: "16.x"
       - run: yarn
-      - uses: ArtiomTr/jest-coverage-report-action@v2
-        id: coverage
+      - run: yarn test
+      - uses: MishaKav/jest-coverage-comment@main
+        id: coverageComment
         with:
-          output: comment, report-markdown
+          junitxml-path: ./junit.xml
+          coverage-summary-path: ./coverage/coverage-final.json 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always()
