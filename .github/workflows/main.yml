@@ -26,6 +26,8 @@ jobs:
       # Cloudformation Lint
       - run: cfn-lint
   Unit-Test:
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
