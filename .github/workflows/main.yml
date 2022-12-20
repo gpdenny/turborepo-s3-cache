@@ -28,6 +28,7 @@ jobs:
   Unit-Test:
     permissions:
       pull-requests: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
