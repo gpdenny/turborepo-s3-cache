@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: "16.x"
       - run: yarn
-      - run: yarn jest --config=jest.config.cjs --coverage --coverageReporters json-summary | tee ./coverage.txt
+      - run: yarn jest --config=jest.config.cjs --coverage --coverageReporters json-summary 2>&1 | tee ./coverage.txt
       - uses: MishaKav/jest-coverage-comment@main
         id: coverageComment
         with:
