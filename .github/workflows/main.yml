@@ -35,5 +35,5 @@ jobs:
       - run: yarn
       - run: >
           yarn jest --config=jest.config.cjs
-          --coverage --coverageReporters=json-summary 
+          --coverage --coverageReporters=json-summary
           --coverageReporters=text | tee ./coverage.txt
