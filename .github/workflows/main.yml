@@ -35,7 +35,7 @@ jobs:
       - run: yarn
       - run: >
           yarn jest --config=jest.config.cjs
-          --coverage --coverageReporters=json-summary
+          --coverage --coverageReporters=json-summary 
           --coverageReporters=text | tee ./coverage.txt
       - uses: MishaKav/jest-coverage-comment@main
         id: coverageComment
@@ -43,3 +43,6 @@ jobs:
           junitxml-path: ./junit.xml
           coverage-summary-path: ./coverage/coverage-summary.json
           coverage-path: ./coverage.txt
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverageComment.outputs.coverageHtml }}
