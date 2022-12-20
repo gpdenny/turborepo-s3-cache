@@ -4,8 +4,12 @@
     "commonjs": true,
     "es2021": true
   },
-  "extends": ["standard-with-typescript", "plugin:prettier/recommended"],
+  "extends": "standard-with-typescript",
   "overrides": [],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": ["tsconfig.json"]
+  },
   "rules": {
     "@typescript-eslint/semi": ["error", "always"],
     "@typescript-eslint/no-extra-semi": "error"

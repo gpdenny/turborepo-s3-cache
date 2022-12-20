@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { handler } from '../authorizer';
@@ -55,7 +56,7 @@ describe('Authorization Handler', () => {
 
   it('Should return Deny policy for missing token and team', async () => {
     event.headers = {};
-    event.queryStringParameters = {}
+    event.queryStringParameters = {};
 
     const expectedPolicy = {
       Version: '2012-10-17',

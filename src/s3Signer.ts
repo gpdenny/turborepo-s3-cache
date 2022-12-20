@@ -1,26 +1,24 @@
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-import { s3Client } from "./libs/S3Client";
-
-const region = process.env.REGION;
+import { s3Client } from './libs/S3Client';
 
 export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  const method = event.headers['access-control-request-method'] || event.headers['Access-Control-Request-Method'];
+  const method = event.headers['access-control-request-method'] ?? event.headers['Access-Control-Request-Method'];
   const team = event.queryStringParameters?.slug ?? '';
   const hash = event.pathParameters?.hash ?? '';
 
-  var command: PutObjectCommand | GetObjectCommand;
-  var redirect = '';
+  let command: PutObjectCommand | GetObjectCommand;
+  let redirect = '';
 
   const params = {
     Bucket: process.env.CACHE_BUCKET,
     Key: `${team}/${hash}`
-  }
+  };
 
   try {
-    if (method == 'PUT') {
+    if (method === 'PUT') {
       command = new PutObjectCommand({
         ...params,
         ACL: 'private'
@@ -29,22 +27,20 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
       return {
         statusCode: 200,
         headers: {
-          Location: redirect,
+          Location: redirect
         },
         body: ''
       };
-
-    } else if (method == 'GET') {
+    } else if (method === 'GET') {
       command = new GetObjectCommand(params);
       redirect = await getSignedUrl(s3Client, command, { expiresIn: 60 });
       return {
         statusCode: 200,
         headers: {
-          Location: redirect,
+          Location: redirect
         },
         body: ''
       };
-
     } else {
       return {
         statusCode: 200,
@@ -52,7 +48,7 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
       };
     }
   } catch (err) {
-    console.log("Error creating presigned URL", err);
+    console.log('Error creating presigned URL', err);
   }
   return {
     statusCode: 500,
