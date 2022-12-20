@@ -1,3 +1,4 @@
+---
 version: '3.7'
 services:
   minio:
@@ -38,7 +39,8 @@ services:
       retries: 10
     ports:
       - 8000:8000
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+    command: >
+      "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
   createtables:
     image: amazon/aws-cli
     environment:
@@ -61,7 +63,9 @@ services:
       - AWS_SECRET_ACCESS_KEY=dynamo123
       - DYNAMO_ENDPOINT=http://dynamodb:8000
     healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:8001/']
+      test: >
+        ['CMD', 'wget', '--no-verbose', '--tries=1',
+         '--spider', 'http://localhost:8001/']
       interval: 1s
       timeout: 10s
       retries: 10
