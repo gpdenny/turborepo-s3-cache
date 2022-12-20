@@ -12,9 +12,9 @@ Serverless Turborepo remote caching using API Gateway and S3.
 
 This project is a serverless implementation of the [Turborepo custom remote cache server](https://turbo.build/repo/docs/core-concepts/remote-caching#custom-remote-caches).
 
-It makes use of the [preflight](https://turbo.build/repo/docs/reference/command-line-reference#--preflight) Turborepo feature to return signed S3 URLs to the client.
+It makes use of the [preflight](https://turbo.build/repo/docs/reference/command-line-reference#--preflight) Turborepo feature to return signed S3 URLs to the client to upload/download artifacts directly from S3.
 
-Build and Deployment is managed by the [Serverless Framework](http://serverless.com/) for ease of use.
+Build and Deployment is managed by the [Serverless Framework](http://serverless.com/).
 
 ![diagram](docs/diagram.png)
 
@@ -47,8 +47,6 @@ Build and Deployment is managed by the [Serverless Framework](http://serverless.
 - `TEAMS_TABLE_NAME` - Name for the DynamoDB teams table [see below](#item6)
 - `CACHE_BUCKET_NAME` - Name for the artifacts S3 bucket
 - `CACHE_EXPIRATION_DAYS` - Number of days cache artifacts are kept in S3 before being deleted
-- `API_GW_LOGS` - [true/false] - Should API Gateway logging be enabled
-- `API_LOG_ROLE` - [true/false] - Should Cloudformation create and set the API Gateway Cloudwatch log role
 
 5. Run Serverless deploy
 
@@ -64,7 +62,7 @@ Build and Deployment is managed by the [Serverless Framework](http://serverless.
    aws dynamodb put-item \
        --table-name `TEAMS_TABLE_NAME`  \
        --item \
-           '{"name": {"S": "myteam"}, "tokens": {"S": "[\"token1\", \"token2\"]"}}'
+           '{"name": {"S": "myteam"}, "tokens": {"L": [{"S": "token_1"}, {"S": "token_2"}]}}'
    ```
 
 7. Add remote cache to your Turborepo config
