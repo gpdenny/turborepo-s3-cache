@@ -12,86 +12,42 @@ provider:
           Action:
             - dynamodb:GetItem
           Resource: !GetAtt TeamsTable.Arn
-  logs:
-    restApi: ${env:API_GW_LOGS}
-  apiGateway:
-    binaryMediaTypes:
-      - "application/octet-stream"
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+          Resource: !Sub '${CacheBucket.Arn}/*'
 
 functions:
   authorizer:
     handler: src/authorizer.handler
     environment:
       REGION: ${self:provider.region}
-      TEAMS_TABLE: !Ref TeamsTable
-  emptyResponse:
-    # Route not implemented
-    # Vercel specific endpoint just need to return 200
-    # Handy to build the API Gateway authorizer too
-    handler: src/emptyResponse.handler
+      TEAMS_TABLE: ${env:TEAMS_TABLE_NAME}
+  s3Signer:
+    handler: src/s3Signer.handler
+    environment:
+      REGION: ${self:provider.region}
+      CACHE_BUCKET: ${env:CACHE_BUCKET_NAME}
     events:
       - http:
-          path: /v8/artifacts/events
-          method: post
+          path: /v8/artifacts/{hash}
+          method: options
+          request:
+            parameters:
+              paths:
+                hash: true
+              querystrings:
+                slug: true
+              headers:
+                Access-Control-Request-Method: true
           authorizer:
-            name: Authorizer
-            arn: !GetAtt AuthorizerLambdaFunction.Arn
-            identitySource: >
-              method.request.header.Authorization,
-              method.request.querystring.slug
+            name: authorizer
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
             type: request
 
-custom:
-  apiGatewayServiceProxies:
-    - s3:
-        path: /v8/artifacts/{hash}
-        method: get
-        authorizationType: "CUSTOM"
-        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
-        action: GetObject
-        bucket:
-          Ref: CacheBucket
-        key:
-          pathParam: hash
-        pathOverride: "{prefix}/{hash}"
-        requestParameters:
-          "integration.request.path.hash": "method.request.path.hash"
-          "integration.request.path.prefix": "method.request.querystring.slug"
-        response:
-          template:
-            clientError: |-
-              { "message": "there is an error in your request" }
-            serverError: |-
-              { "message": "there was an error handling your request" }
-
-    - s3:
-        path: /v8/artifacts/{hash}
-        method: put
-        authorizationType: "CUSTOM"
-        authorizerId: {Ref: "AuthorizerApiGatewayAuthorizer"}
-        action: PutObject
-        bucket:
-          Ref: CacheBucket
-        key:
-          pathParam: hash
-        pathOverride: "{prefix}/{hash}"
-        requestParameters:
-          "integration.request.path.hash": "method.request.path.hash"
-          "integration.request.path.prefix": "method.request.querystring.slug"
-          "integration.request.header.x-amz-acl": "'private'"
-          "integration.request.header.x-amz-server-side-encryption": "'AES256'"
-        response:
-          template:
-            success: |-
-              { "message: "accepted" }
-            clientError: |-
-              { "message": "there is an error in your request" }
-            serverError: |-
-              { "message": "there was an error handling your request" }
-
 resources:
-  Conditions:
-    LoggingRole: !Equals ["${env:API_LOG_ROLE}", "true"]
   Resources:
     CacheBucket:
       Type: AWS::S3::Bucket
@@ -107,27 +63,6 @@ resources:
             - Id: DeleteContentAfterXDay
               Status: "Enabled"
               ExpirationInDays: ${env:CACHE_EXPIRATION_DAYS}
-    ApiGwAccountConfig:
-      Condition: LoggingRole
-      Type: "AWS::ApiGateway::Account"
-      Properties:
-        CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
-    ApiGatewayLoggingRole:
-      Condition: LoggingRole
-      Type: "AWS::IAM::Role"
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - "apigateway.amazonaws.com"
-              Action: "sts:AssumeRole"
-        Path: "/"
-        ManagedPolicyArns:
-          - !Sub
-            "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
     TeamsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -142,6 +77,10 @@ resources:
 
 useDotenv: true
 
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true
+
 plugins:
   - serverless-plugin-typescript
-  - serverless-apigateway-service-proxy
+  - serverless-offline

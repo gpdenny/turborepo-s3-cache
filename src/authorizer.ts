@@ -19,8 +19,7 @@ const handler = async (event: APIGatewayRequestAuthorizerEvent): Promise<AuthRes
 
   try {
     const data: GetCommandOutput = await DocumentClient.get(params);
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (JSON.parse(data.Item?.tokens).includes(token)) {
+    if (data.Item?.tokens.includes(token)) {
       // Valid Token
       return {
         principalId: team,

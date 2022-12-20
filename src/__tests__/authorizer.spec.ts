@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { handler } from '../authorizer';
@@ -8,15 +7,13 @@ import event from './apigateway-authorizer.json';
 describe('Authorization Handler', () => {
   const ddbMock = mockClient(DynamoDBDocumentClient);
 
-  beforeEach(() => {
-    ddbMock.reset();
+  beforeAll(() => {
+    ddbMock.on(GetCommand).resolves({
+      Item: { name: 'team_test', tokens: ['test1234'] }
+    });
   });
 
   it('Should return Allow policy for valid tokens & team', async () => {
-    ddbMock.on(GetCommand).resolves({
-      Item: { name: 'team_test', tokens: '["test1234"]' }
-    });
-
     event.headers['Authorization'] = 'Bearer test1234';
     event.queryStringParameters['slug'] = 'team_test';
 
@@ -37,10 +34,6 @@ describe('Authorization Handler', () => {
   });
 
   it('Should return Deny policy for invalid tokens', async () => {
-    ddbMock.on(GetCommand).resolves({
-      Item: { name: 'team_test', tokens: '["test1234"]' }
-    });
-
     event.headers['Authorization'] = 'Bearer 1234';
     event.queryStringParameters['slug'] = 'team_test';
 
@@ -60,13 +53,9 @@ describe('Authorization Handler', () => {
     expect(policy.policyDocument).toEqual(expectedPolicy);
   });
 
-  it('Should return Deny policy for missing token', async () => {
-    ddbMock.on(GetCommand).resolves({
-      Item: { name: 'team_test', tokens: '["test1234"]' }
-    });
-
+  it('Should return Deny policy for missing token and team', async () => {
     event.headers = {};
-    event.queryStringParameters['slug'] = 'missing_team';
+    event.queryStringParameters = {}
 
     const expectedPolicy = {
       Version: '2012-10-17',
@@ -85,10 +74,6 @@ describe('Authorization Handler', () => {
   });
 
   it('Should return Deny policy for invalid teams', async () => {
-    ddbMock.on(GetCommand).resolves({
-      Item: { name: 'team_test', tokens: '["test1234"]' }
-    });
-
     event.headers['Authorization'] = 'Bearer 1234';
     event.queryStringParameters['slug'] = 'missing_team';
 
@@ -114,7 +99,7 @@ describe('Authorization Handler', () => {
     });
 
     event.headers['Authorization'] = 'Bearer test1234';
-    event.queryStringParameters = {};
+    event.queryStringParameters['slug'] = 'team_test';
 
     const expectedPolicy = {
       Version: '2012-10-17',

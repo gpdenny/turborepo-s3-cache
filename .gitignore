@@ -4,5 +4,6 @@
 !.env.ci
 **/node_modules
 .serverless
+.build
 junit.xml
 coverage
