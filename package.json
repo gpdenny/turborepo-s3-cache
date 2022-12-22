@@ -10,7 +10,7 @@
     "test": "jest --config=jest.config.cjs --coverage",
     "test:e2e": "jest --config=jest-e2e.config.cjs",
     "start": "docker-compose up -d && sls offline --stage local",
-    "start:ci": "docker-compose up -d && sls offline --stage ci",
+    "test:ci": "./scripts/test-ci.sh",
     "package": "sls package",
     "deploy": "sls deploy"
   },
